@@ -1,2 +1,4 @@
-/data
-/logs
+/tikv
+/pd
+/results
+/tidb-docker-compose/workdir
