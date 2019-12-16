@@ -1,0 +1,263 @@
+---
+# Source: tidb-docker-compose/templates/docker-compose.yml
+
+version: '2.1'
+
+services:
+  pd0:
+    image: pingcap/pd:latest
+    network_mode: host
+    volumes:
+      - ./config/pd.toml:/pd.toml:ro
+      - ./workdir/pd0/data:/data
+      - ./workdir/pd0/logs:/logs
+    command:
+      - --name=pd0
+      - --client-urls=http://0.0.0.0:2379
+      - --peer-urls=http://0.0.0.0:12379
+      - --advertise-client-urls=http://127.0.0.1:2379
+      - --advertise-peer-urls=http://127.0.0.1:12379
+      - --initial-cluster=pd0=http://127.0.0.1:12379,pd1=http://127.0.0.1:12380,pd2=http://127.0.0.1:12381
+      - --data-dir=/data/pd0
+      - --config=/pd.toml
+      - --log-file=/logs/pd0.log
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  pd1:
+    image: pingcap/pd:latest
+    network_mode: host
+    volumes:
+      - ./config/pd.toml:/pd.toml:ro
+      - ./workdir/pd1/data:/data
+      - ./workdir/pd1/logs:/logs
+    command:
+      - --name=pd1
+      - --client-urls=http://0.0.0.0:2380
+      - --peer-urls=http://0.0.0.0:12380
+      - --advertise-client-urls=http://127.0.0.1:2380
+      - --advertise-peer-urls=http://127.0.0.1:12380
+      - --initial-cluster=pd0=http://127.0.0.1:12379,pd1=http://127.0.0.1:12380,pd2=http://127.0.0.1:12381
+      - --data-dir=/data/pd1
+      - --config=/pd.toml
+      - --log-file=/logs/pd1.log
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  pd2:
+    image: pingcap/pd:latest
+    network_mode: host
+    volumes:
+      - ./config/pd.toml:/pd.toml:ro
+      - ./workdir/pd2/data:/data
+      - ./workdir/pd2/logs:/logs
+    command:
+      - --name=pd2
+      - --client-urls=http://0.0.0.0:2381
+      - --peer-urls=http://0.0.0.0:12381
+      - --advertise-client-urls=http://127.0.0.1:2381
+      - --advertise-peer-urls=http://127.0.0.1:12381
+      - --initial-cluster=pd0=http://127.0.0.1:12379,pd1=http://127.0.0.1:12380,pd2=http://127.0.0.1:12381
+      - --data-dir=/data/pd2
+      - --config=/pd.toml
+      - --log-file=/logs/pd2.log
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  tikv0:
+    image: pingcap/tikv:latest
+    network_mode: host
+    volumes:
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./workdir/tikv0/data.mp:/data
+      - ./workdir/tikv0/logs:/logs
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=127.0.0.1:20160
+      - --data-dir=/data/tikv0
+      - --pd=127.0.0.1:2379,127.0.0.1:2380,127.0.0.1:2381
+      - --config=/tikv.toml
+      - --log-file=/logs/tikv0.log
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  tikv1:
+    image: pingcap/tikv:latest
+    network_mode: host
+    volumes:
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./workdir/tikv1/data:/data
+      - ./workdir/tikv1/logs:/logs
+    command:
+      - --addr=0.0.0.0:20161
+      - --advertise-addr=127.0.0.1:20161
+      - --data-dir=/data/tikv1
+      - --pd=127.0.0.1:2379,127.0.0.1:2380,127.0.0.1:2381
+      - --config=/tikv.toml
+      - --log-file=/logs/tikv1.log
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  tikv2:
+    image: pingcap/tikv:latest
+    network_mode: host
+    volumes:
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./workdir/tikv2/data:/data
+      - ./workdir/tikv2/logs:/logs
+    command:
+      - --addr=0.0.0.0:20162
+      - --advertise-addr=127.0.0.1:20162
+      - --data-dir=/data/tikv2
+      - --pd=127.0.0.1:2379,127.0.0.1:2380,127.0.0.1:2381
+      - --config=/tikv.toml
+      - --log-file=/logs/tikv2.log
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+    #  
+    #  tidb:
+    #    image: pingcap/tidb:latest
+    #    network_mode: host
+    #    volumes:
+    #      - ./config/tidb.toml:/tidb.toml:ro
+    #      - ./logs:/logs
+    #    command:
+    #      - --store=tikv
+    #      - --path=127.0.0.1:2379,127.0.0.1:2380,127.0.0.1:2381
+    #      - --config=/tidb.toml
+    #      - --log-file=/logs/tidb.log
+    #    depends_on:
+    #      - "tikv0"
+    #      - "tikv1"
+    #      - "tikv2"
+    #    # sysctls:
+    #    #   net.core.somaxconn: 32768
+    #    # ulimits:
+    #    #   nofile:
+    #    #     soft: 1000000
+    #    #     hard: 1000000
+    #    restart: on-failure
+    #  
+    #  tispark-master:
+    #    image: pingcap/tispark:latest
+    #    command:
+    #      - /opt/spark/sbin/start-master.sh
+    #    volumes:
+    #      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    #    environment:
+    #      SPARK_MASTER_PORT: 7077
+    #      SPARK_MASTER_WEBUI_PORT: 8080
+    #    ports:
+    #      - "7077:7077"
+    #      - "8080:8080"
+    #    depends_on:
+    #      - "tikv0"
+    #      - "tikv1"
+    #      - "tikv2"
+    #    restart: on-failure
+    #  tispark-slave0:
+    #    image: pingcap/tispark:latest
+    #    command:
+    #      - /opt/spark/sbin/start-slave.sh
+    #      - spark://tispark-master:7077
+    #    volumes:
+    #      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    #    environment:
+    #      SPARK_WORKER_WEBUI_PORT: 38081
+    #    ports:
+    #      - "38081:38081"
+    #    depends_on:
+    #      - tispark-master
+    #    restart: on-failure
+    #  
+    #  tidb-vision:
+    #    image: pingcap/tidb-vision:latest
+    #    environment:
+    #      PD_ENDPOINT: 127.0.0.1:2379
+    #      PORT: 8010
+    #    network_mode: host
+    #    restart: on-failure
+  # pushgateway:
+  #     image: prom/pushgateway:v0.3.1
+  #     command:
+  #       - --web.listen-address=0.0.0.0:9091
+  #       - --log.level=error
+  #     network_mode: host
+  #     restart: on-failure
+
+  # prometheus:
+  #   user: root
+  #   image: prom/prometheus:v2.2.1
+  #   command:
+  #     - --log.level=error
+  #     - --storage.tsdb.path=/data/prometheus
+  #     - --config.file=/etc/prometheus/prometheus.yml
+  #     - --web.listen-address=0.0.0.0:9090
+  #   network_mode: host
+  #   volumes:
+  #     - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #     - ./config/pd.rules.yml:/etc/prometheus/pd.rules.yml:ro
+  #     - ./config/tikv.rules.yml:/etc/prometheus/tikv.rules.yml:ro
+  #     - ./config/tidb.rules.yml:/etc/prometheus/tidb.rules.yml:ro
+  #     - ./data:/data
+  #   restart: on-failure
+  # grafana:
+  #   image: grafana/grafana:5.3.0
+  #   user: "0"
+  #   network_mode: host
+  #   environment:
+  #     GF_SERVER_HTTP_PORT: 3000
+  #     GF_LOG_LEVEL: error
+  #   volumes:
+  #     - ./config/grafana:/etc/grafana
+  #     - ./config/dashboards:/tmp/dashboards
+  #     - ./data/grafana:/var/lib/grafana
+  #   restart: on-failure
+  # dashboard-installer:
+  #   image: pingcap/tidb-dashboard-installer:v2.0.0
+  #   network_mode: host
+  #   command: ["127.0.0.1:3000"]
+  #   restart: on-failure

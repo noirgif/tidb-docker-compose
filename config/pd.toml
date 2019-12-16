@@ -26,7 +26,7 @@ cert-path = ""
 key-path = ""
 
 [log]
-level = "error"
+level = "debug"
 
 # log format, one of json, text, console
 #format = "text"
@@ -48,7 +48,7 @@ level = "error"
 
 [metric]
 # prometheus client push interval, set "0s" to disable prometheus.
-interval = "15s"
+interval = "0s"
 # prometheus pushgateway address, leaves it empty will disable prometheus.
 address = "pushgateway:9091"
 
@@ -57,7 +57,7 @@ max-merge-region-size = 0
 split-merge-interval = "1h"
 max-snapshot-count = 3
 max-pending-peer-count = 16
-max-store-down-time = "30m"
+max-store-down-time = "2s"
 leader-schedule-limit = 4
 region-schedule-limit = 4
 replica-schedule-limit = 8
